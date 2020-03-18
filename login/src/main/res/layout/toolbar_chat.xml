@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar_chat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:navigationIcon="@drawable/ic_keyboard_backspace_black_24dp"
+        app:popupTheme="@style/Animation.AppCompat.Dialog"
+        app:logoDescription="asdasdasd"
+        app:maxButtonHeight="50dp"
+        app:navigationContentDescription="tttttt"
+        android:background="@color/MycolorPrimaryDark">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/title_chat"
+            android:textColor="@color/MycolorAccent"
+            android:text="标题"
+            android:layout_gravity="center"
+            android:textSize="20sp"/>
+
+
+    </androidx.appcompat.widget.Toolbar>
+«</LinearLayout>

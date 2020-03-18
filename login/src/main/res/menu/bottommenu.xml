@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/firstfragment"
+        android:icon="@drawable/ic_looks_one_black_24dp"
+        android:title="首页" />
+    <item
+        android:id="@+id/secondfragment"
+        android:icon="@drawable/ic_looks_two_black_24dp"
+        android:title="论坛" />
+    <item
+        android:id="@+id/select_dakarecord"
+        android:icon="@drawable/ic_done_black_24dp"
+        android:title="一键生成手帐" />
+    <item
+        android:id="@+id/thirdfragment"
+        android:icon="@drawable/ic_looks_3_black_24dp"
+        android:title="消息" />
+    <item
+        android:id="@+id/fourthfragment"
+        android:icon="@drawable/ic_looks_4_black_24dp"
+        android:title="我的" />
+</menu>

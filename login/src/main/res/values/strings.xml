@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">shouzhang</string>
+    <string name="AddFriend_Fragment_Title">添加好友</string>
+    <string name="ConfirmApplication_Fragment_Title">好友申请列表</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>

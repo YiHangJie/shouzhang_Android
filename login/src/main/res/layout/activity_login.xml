@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding = "utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/background"
+    android:id="@+id/loginlayout"
+    android:fitsSystemWindows="true">
+
+    <EditText
+        android:id="@+id/account"
+        android:layout_width="330dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="325dp"
+        android:background="@mipmap/account"
+        android:gravity="center"
+        android:hint="请输入用户名"
+        android:layout_centerHorizontal="true"
+        android:singleLine="true"
+        android:textSize="20sp" />
+
+    <EditText
+        android:id="@+id/password"
+        android:layout_width="330dp"
+        android:layout_height="60dp"
+        android:layout_below="@+id/account"
+        android:layout_alignStart="@+id/account"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="22dp"
+        android:background="@mipmap/password"
+        android:gravity="center"
+        android:hint="请输入密码"
+        android:layout_centerHorizontal="true"
+        android:password="true"
+        android:singleLine="true"
+        android:textSize="20sp" />
+
+    <Button
+        android:id="@+id/注册"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_width="240dp"
+        android:layout_height="14dp"
+        android:layout_below="@+id/登陆"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="-282dp"
+        android:layout_marginTop="23dp"
+        android:layout_toEndOf="@+id/登陆"
+        android:alpha="100"
+        android:background="@mipmap/register"
+        android:gravity="center" />
+
+
+    <Button
+        android:id="@+id/登陆"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_width="327dp"
+        android:layout_height="67dp"
+        android:layout_below="@+id/password"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="-330dp"
+        android:layout_marginTop="32dp"
+        android:layout_toEndOf="@+id/password"
+        android:alpha="100"
+        android:background="@mipmap/signupicon"
+        android:text="登 陆"
+        android:textColor="#F8F8FF"
+        android:textSize="22sp"
+        android:typeface="normal" />
+
+    <Button
+        android:id="@+id/忘记密码"
+        android:layout_width="149dp"
+        android:layout_height="38dp"
+        android:layout_below="@+id/注册"
+        android:layout_marginTop="0dp"
+        android:layout_marginStart="180dp"
+        android:alpha="0"
+        style="?android:attr/borderlessButtonStyle"/>
+
+    <Button
+        android:id="@+id/Test"
+        android:layout_width="wrap_content"
+        android:layout_height="38dp"
+        android:layout_below="@+id/注册"
+        android:layout_marginTop="0dp"
+        android:layout_marginStart="50dp"
+        android:text="好友聊天测试"
+        style="?android:attr/borderlessButtonStyle"/>
+
+</RelativeLayout>

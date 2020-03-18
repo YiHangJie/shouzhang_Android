@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bottomnavigation"
+    app:startDestination="@id/firstfragment">
+
+    <fragment
+        android:id="@+id/firstfragment"
+        android:name="com.example.login.Fragment.FirstFragment"
+        android:label="首页"
+        tools:layout="@layout/first_fragment" />
+    <fragment
+        android:id="@+id/fourthfragment"
+        android:name="com.example.login.Fragment.FourthFragment"
+        android:label="我的"
+        tools:layout="@layout/fourth_fragment" >
+        <action
+            android:id="@+id/action_fourthfragment_to_dakaRecord_Fragment"
+            app:destination="@id/dakaRecord_Fragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/secondfragment"
+        android:name="com.example.login.Fragment.SecondFragment"
+        android:label="论坛"
+        tools:layout="@layout/second_fragment" />
+    <fragment
+        android:id="@+id/thirdfragment"
+        android:name="com.example.login.Fragment.ThirdFragment"
+        android:label="消息"
+        tools:layout="@layout/third_fragment" >
+        <action
+            android:id="@+id/action_thirdfragment_to_fragment_addFriend"
+            app:destination="@id/fragment_addFriend" />
+        <action
+            android:id="@+id/action_thirdfragment_to_fragment_confirmapplication"
+            app:destination="@id/fragment_confirmapplication" />
+    </fragment>
+    <fragment
+        android:id="@+id/fragment_addFriend"
+        android:name="com.example.login.Fragment.Fragment_addFriend"
+        android:label="添加好友"
+        tools:layout="@layout/fragment_addfriend" />
+    <fragment
+        android:id="@+id/fragment_confirmapplication"
+        android:name="com.example.login.Fragment.Fragment_confirmapplication"
+        android:label="好友申请列表"
+        tools:layout="@layout/fragment_confirmapplication"/>
+    <fragment
+        android:id="@+id/dakaRecord_Fragment"
+        android:name="com.example.login.Fragment.Fragment_DakaRecord"
+        android:label="打卡记录"
+        tools:layout="@layout/fragment_dakarecord" />
+    <fragment
+        android:id="@+id/generateShouzhang_Fragment"
+        android:name="com.example.login.Fragment.GenerateShouzhang_Fragment"
+        android:label="一键生成手帐"
+        tools:layout="@layout/fragment_generate_shouzhang" />
+    <fragment
+        android:id="@+id/select_dakarecord"
+        android:name="com.example.login.Fragment.Select_Dakarecord"
+        android:label="打卡记录"
+        tools:layout="@layout/fragment_select_dakarecord" >
+        <action
+            android:id="@+id/action_select_dakarecord_to_generateShouzhang_Fragment"
+            app:destination="@id/generateShouzhang_Fragment" />
+    </fragment>
+</navigation>
