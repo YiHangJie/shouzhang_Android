@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".Activity.UpdateHeadPic_Activity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:text="请选择上传方式"
+        android:textSize="15sp"
+        android:textColor="@color/cardview_dark_background"
+        android:layout_gravity="center_horizontal"
+        />
+    <Button
+        android:id="@+id/select_from_camera"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:backgroundTint="@color/cardview_light_background"
+        android:shadowColor="@color/cardview_light_background"
+        android:text="拍照"
+        android:textSize="13sp"
+        />
+
+    <Button
+        android:id="@+id/select_from_album"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:backgroundTint="@color/cardview_light_background"
+        android:shadowColor="@color/cardview_light_background"
+        android:text="从相册中选择"
+        android:textSize="13sp"
+        />
+
+    <Button
+        android:id="@+id/cancel_reset"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:backgroundTint="@color/cardview_light_background"
+        android:shadowColor="@color/cardview_light_background"
+        android:text="取消"
+        android:textSize="13sp"
+        />
+
+
+</LinearLayout>

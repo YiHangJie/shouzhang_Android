@@ -1,4 +1,4 @@
-package com.example.login;
+package com.example.login.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,6 +12,11 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.login.Fragment.FourthFragment;
+import com.example.login.JSESSIONID;
+import com.example.login.NetUtils;
+import com.example.login.R;
+import com.example.login.SaveCookie;
+import com.example.login.websocket_Manager;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -85,7 +90,7 @@ public class login extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     Toast.makeText(login.this,"前往注册",Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(login.this ,register.class);
+                    Intent intent = new Intent(login.this , register.class);
                     String message = "请求注册";
                     intent.putExtra(EXTRA_MESSAGE, message);
                     startActivity(intent);

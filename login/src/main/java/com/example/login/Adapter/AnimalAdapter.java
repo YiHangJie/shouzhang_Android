@@ -7,12 +7,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.login.Animal;
-import com.example.login.ChatActivity;
+import com.example.login.Activity.ChatActivity;
 import com.example.login.R;
 
 import java.util.LinkedList;

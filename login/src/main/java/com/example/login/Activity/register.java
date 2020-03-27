@@ -1,4 +1,4 @@
-package com.example.login;
+package com.example.login.Activity;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -12,6 +12,10 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.login.CountdownButton;
+import com.example.login.NetUtils;
+import com.example.login.R;
 
 import java.io.InputStream;
 import java.io.OutputStream;

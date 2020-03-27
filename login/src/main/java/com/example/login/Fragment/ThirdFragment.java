@@ -3,9 +3,6 @@ package com.example.login.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -14,32 +11,23 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import com.example.login.Adapter.AnimalAdapter;
 import com.example.login.Animal;
-import com.example.login.ChatActivity;
 import com.example.login.JSESSIONID;
-import com.example.login.Main_Activity;
 import com.example.login.Model.ThirdViewModel;
 import com.example.login.NetUtils;
 import com.example.login.R;
-import com.example.login.login;
-import com.example.login.register;
 
 import org.json.JSONArray;
 

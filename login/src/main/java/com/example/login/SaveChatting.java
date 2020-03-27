@@ -3,6 +3,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import net.sf.json.JSON;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -28,10 +30,16 @@ public class SaveChatting {
         editor.apply();
 
         JSONObject personal_chatdata = new JSONObject();
+        JSONObject message_all = new JSONObject();
         for(int i = 0;i<chatdata.size();i++)
         {
-            personal_chatdata.putOpt(Integer.toString(i),chatdata.get(i));
+            JSONObject message = new JSONObject();
+            message.put("content",chatdata.get(i).getContent());
+            message.put("type",chatdata.get(i).getType());
+            message.put("isread",chatdata.get(i).getIsread());
+            message_all.put(Integer.toString(i),message);
         }
+        personal_chatdata.put("messageList",message_all);
         personal_chatdata.put("size",chatdata.size());
         editor.putString(fname,personal_chatdata.toString());
         editor.apply();
@@ -43,16 +51,23 @@ public class SaveChatting {
 
         ArrayList<MsgEntity> chatdata = new ArrayList<MsgEntity>();
 
-        net.sf.json.JSONObject temp = new net.sf.json.JSONObject();
+        JSONObject single = new JSONObject(shp.getString(fname,""));
 
-        JSONObject personal_data = new JSONObject(shp.getString(fname,null));
+        int size = single.getInt("size");
 
-        int size = personal_data.getInt("size");
+        JSONObject message_all = single.getJSONObject("messageList");
 
-        for(int i = size-1;i>=size-100;i--)
+        for(int i = 0;i<size;i++)
         {
-            chatdata.add(0, net.sf.json.JSONObject.toBean(personal_data.getJSONObject(Integer.toString(i)),MsgEntity.class));
+            JSONObject t = new JSONObject(message_all.get(Integer.toString(i)).toString());
+            String content = t.getString("content");
+            int type = t.getInt("type");
+            int isread = t.getInt("isread");
+            MsgEntity temp = new MsgEntity(type,content,isread);
+            chatdata.add(temp);
         }
+
+        //Log.e("SaveChatting",chatdata.get(0).getContent());
         return chatdata;
     }
 }

@@ -1,8 +1,12 @@
-package com.example.login;
+package com.example.login.Activity;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
+import android.widget.ImageView;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,9 +24,13 @@ import com.amap.api.maps.AMap;
 import com.amap.api.maps.LocationSource;
 import com.amap.api.maps.MapView;
 import com.example.login.Adapter.RecycleAdapterDome;
+import com.example.login.NetUtils;
+import com.example.login.R;
+import com.example.login.websocket_Manager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.io.File;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -260,59 +268,59 @@ public class Main_Activity extends AppCompatActivity  {
         Log.e("Main_activity","onResume()");
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        final String uname_close = websocket_Manager.getUsername();
-        Log.e("Main_activity","onStop()");
-        Log.e("uname",websocket_Manager.getUsername());
-        //activyty被销毁之前向后台发送数据
-        Thread closeActivity = new Thread()
-        {
-            public void run()
-            {
-                String urlPath="http://47.103.66.24:8080/TravelApp/account/DoClose";
-                //    String urlPath="http://192.168.42.207:8080/20170112/login/toJsonMain.action"; 这个是实体机(手机)的端口
-                URL url;
-                int id = 0 ;
-                try {
-                    url = new URL(urlPath);
-
-                    String content;
-
-                    HttpURLConnection conn = (HttpURLConnection) url.openConnection(); //开启连接
-                    conn.setConnectTimeout(5000);
-
-                    conn.setDoOutput(true);
-
-                    conn.setDoInput(true);
-
-                    conn.setRequestMethod("POST");
-
-                    conn.setRequestProperty("ser-Agent", "Fiddler");
-
-                    conn.setRequestProperty("uname", uname_close);
-
-                    Log.d("uname",websocket_Manager.getUsername());
-
-                    InputStream inputStream = conn.getInputStream();
-                    // 调用自己写的NetUtils() 将流转成string类型
-
-                    String json = NetUtils.readString(inputStream);
-                    System.out.println(json + "json");
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-            }
-        };
-        closeActivity.start();
-        try {
-            closeActivity.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        //websocket_Manager.killwebsocket();
-    }
+//    @Override
+//    protected void onStop() {
+//        super.onStop();
+//        final String uname_close = websocket_Manager.getUsername();
+//        Log.e("Main_activity","onStop()");
+//        Log.e("uname",websocket_Manager.getUsername());
+//        //activyty被销毁之前向后台发送数据
+//        Thread closeActivity = new Thread()
+//        {
+//            public void run()
+//            {
+//                String urlPath="http://47.103.66.24:8080/TravelApp/account/DoClose";
+//                //    String urlPath="http://192.168.42.207:8080/20170112/login/toJsonMain.action"; 这个是实体机(手机)的端口
+//                URL url;
+//                int id = 0 ;
+//                try {
+//                    url = new URL(urlPath);
+//
+//                    String content;
+//
+//                    HttpURLConnection conn = (HttpURLConnection) url.openConnection(); //开启连接
+//                    conn.setConnectTimeout(5000);
+//
+//                    conn.setDoOutput(true);
+//
+//                    conn.setDoInput(true);
+//
+//                    conn.setRequestMethod("POST");
+//
+//                    conn.setRequestProperty("ser-Agent", "Fiddler");
+//
+//                    conn.setRequestProperty("uname", uname_close);
+//
+//                    Log.d("uname",websocket_Manager.getUsername());
+//
+//                    InputStream inputStream = conn.getInputStream();
+//                    // 调用自己写的NetUtils() 将流转成string类型
+//
+//                    String json = NetUtils.readString(inputStream);
+//                    System.out.println(json + "json");
+//                }catch (Exception e){
+//                    e.printStackTrace();
+//                }
+//            }
+//        };
+//        closeActivity.start();
+//        try {
+//            closeActivity.join();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//        //websocket_Manager.killwebsocket();
+//    }
 
     @Override
     protected void onDestroy() {
@@ -367,7 +375,6 @@ public class Main_Activity extends AppCompatActivity  {
         }
         websocket_Manager.killwebsocket();
     }
-
 
     //    private void initLocation(){
 //        //声明AMapLocationClient类对象

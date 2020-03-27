@@ -20,6 +20,12 @@ public class MsgEntity {
         this.content = content;
     }
 
+    public MsgEntity(int type, String content,int isread) {
+        this.type = type;
+        this.content = content;
+        this.isread = isread;
+    }
+
     public String getContent() {
         return content;
     }
