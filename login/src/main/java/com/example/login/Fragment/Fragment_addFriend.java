@@ -172,7 +172,7 @@ public class Fragment_addFriend extends Fragment {
                 String json= NetUtils.readString(inputStream);
                 //System.out.println(json);
                 System.out.println("Main_Activity json:"+json);
-
+                inputStream.close();
                 if(json.equals("用户未找到"))
                 {
                     return 0;

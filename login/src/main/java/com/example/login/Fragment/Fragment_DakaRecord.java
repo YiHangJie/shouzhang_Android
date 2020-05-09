@@ -111,7 +111,7 @@ public class Fragment_DakaRecord extends Fragment {
             String json= NetUtils.readString(inputStream);
             //System.out.println(json);
             System.out.println("Main_Activity json:"+json);
-
+            inputStream.close();
             int code=conn.getResponseCode();
             System.out.println(code);
             if(code==200){   //与后台交互成功返回 200

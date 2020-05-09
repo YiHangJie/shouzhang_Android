@@ -12,11 +12,18 @@
         android:gravity="left"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/fheadpic"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="3dp"/>
+
         <TextView
             android:id="@+id/rev_tv"
-
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
+
     </LinearLayout>
 
     <!--用来显示发送出去信息-->
@@ -26,11 +33,60 @@
         android:gravity="right"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
         <TextView
             android:id="@+id/send_tv"
-
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:id="@+id/uheadpic"
+            android:layout_marginRight="3dp"
+            />
+    </LinearLayout>
+
+    <!--用来显示接受到的图片-->
+    <LinearLayout
+        android:id="@+id/revImg_layout"
+        android:orientation="horizontal"
+        android:gravity="left"
+        android:layout_width="match_parent"
+        android:layout_height="200dp">
+
+        <ImageView
+            android:id="@+id/Img_fheadpic"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="3dp"/>
+
+        <ImageView
+            android:id="@+id/rev_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="60dp"/>
+    </LinearLayout>
+
+    <!--用来显示发送出去图片-->
+    <LinearLayout
+        android:id="@+id/sendImg_layout"
+        android:orientation="horizontal"
+        android:gravity="right"
+        android:layout_width="match_parent"
+        android:layout_height="200dp">
+
+        <ImageView
+            android:id="@+id/send_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="100dp"/>
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:id="@+id/Img_uheadpic"
+            android:layout_marginRight="3dp"/>
+
     </LinearLayout>
 
 </LinearLayout>

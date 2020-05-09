@@ -1,14 +1,14 @@
 package com.example.login;
 
-public class Animal {
+public class Friend {
     private String aName;
     private String aSpeak;
     //private int aIcon;
 
-    public Animal() {
+    public Friend() {
     }
 
-    public Animal(String aName, String aSpeak) {
+    public Friend(String aName, String aSpeak) {
         this.aName = aName;
         this.aSpeak = aSpeak;
         //this.aIcon = aIcon;

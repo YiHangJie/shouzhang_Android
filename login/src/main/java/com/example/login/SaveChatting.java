@@ -37,6 +37,9 @@ public class SaveChatting {
             message.put("content",chatdata.get(i).getContent());
             message.put("type",chatdata.get(i).getType());
             message.put("isread",chatdata.get(i).getIsread());
+            message.put("isImg",chatdata.get(i).getIS_Img());
+            message.put("url",chatdata.get(i).getUrl());
+            message.put("time",chatdata.get(i).getTime());
             message_all.put(Integer.toString(i),message);
         }
         personal_chatdata.put("messageList",message_all);
@@ -63,10 +66,18 @@ public class SaveChatting {
             String content = t.getString("content");
             int type = t.getInt("type");
             int isread = t.getInt("isread");
-            MsgEntity temp = new MsgEntity(type,content,isread);
+            int isImg = t.getInt("isImg");
+            String url = t.getString("url");
+            String time = t.getString("time");
+            MsgEntity temp = null;
+            if(isImg==MsgEntity.IS_Img)
+            {
+                temp = new MsgEntity(type,"",isread,url,isImg,time);
+            }
+            else
+                temp = new MsgEntity(type,content,isread);
             chatdata.add(temp);
         }
-
         //Log.e("SaveChatting",chatdata.get(0).getContent());
         return chatdata;
     }

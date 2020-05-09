@@ -18,6 +18,9 @@
         <action
             android:id="@+id/action_fourthfragment_to_dakaRecord_Fragment"
             app:destination="@id/dakaRecord_Fragment" />
+        <action
+            android:id="@+id/action_fourthfragment_to_fragment_setRecord"
+            app:destination="@id/fragment_setRecord" />
     </fragment>
     <fragment
         android:id="@+id/secondfragment"
@@ -65,4 +68,9 @@
             android:id="@+id/action_select_dakarecord_to_generateShouzhang_Fragment"
             app:destination="@id/generateShouzhang_Fragment" />
     </fragment>
+    <fragment
+        android:id="@+id/fragment_setRecord"
+        android:name="com.example.login.Fragment.Fragment_setRecord"
+        android:label="设置历史数据"
+        tools:layout="@layout/fragment_setrecord"/>
 </navigation>

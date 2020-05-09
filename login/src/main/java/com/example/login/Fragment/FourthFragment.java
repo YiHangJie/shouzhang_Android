@@ -2,6 +2,7 @@ package com.example.login.Fragment;
 
 import androidx.lifecycle.ViewModelProviders;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -24,6 +25,9 @@ import android.widget.Toast;
 
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.login.JSESSIONID;
 import com.example.login.Model.FourthViewModel;
 import com.example.login.NetUtils;
@@ -47,11 +51,15 @@ public class FourthFragment extends Fragment {
     public static final String EXTRA_MESSAGE = "FourthFragment_EXTRA_MESSAGE";
 
     private FourthViewModel mViewModel;
+    private Context mCotext;
 
     private TextView user_name;
+    private Button personalsetting;
     private Button record;
     private Button log_out;
     private ImageView HeadPic;
+
+    private File headpic;
 
     public static FourthFragment newInstance() {
         return new FourthFragment();
@@ -61,32 +69,23 @@ public class FourthFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fourth_fragment, container, false);
-        //getActivity().getActionBar().hide();
+        mCotext = getActivity();
+        personalsetting = (Button)view.findViewById(R.id.个人设置);
         record=(Button)view.findViewById(R.id.历史纪录);//每个按钮都要这样写一遍
         log_out = view.findViewById(R.id.退出登陆);
         HeadPic = view.findViewById(R.id.h_head);
         user_name = view.findViewById(R.id.user_name);
         user_name.setText(websocket_Manager.getUsername());
-        Thread downloadheadpic = new Thread() {
-            @Override
-            public void run() {
-                DownloadHeadPictoServer();
-            }
-        };
-        downloadheadpic.start();
-        try {
-            downloadheadpic.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
 
-        //更新头像
-        String file= readheadpic();
-        Bitmap pic = BitmapFactory.decodeFile(file);
-        if(pic!=null&&HeadPic!=null)
-        {
-            HeadPic.setImageBitmap(pic);
-        }
+//        //更新头像
+//        Thread GetFriendsName = new Thread() {
+//            @Override
+//            public void run() {
+//                headpic = DownloadHeadPicFromServer(websocket_Manager.getUsername());
+//        }
+//        };
+//        GetFriendsName.start();
+
         return view;
     }
 
@@ -94,7 +93,17 @@ public class FourthFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mViewModel = ViewModelProviders.of(this).get(FourthViewModel.class);
-        // TODO: Use the ViewModel
+
+        personalsetting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getActivity(), "前往个人设置", Toast.LENGTH_SHORT).show();
+                NavHostFragment
+                        .findNavController(getParentFragment())
+                        .navigate(R.id.action_fourthfragment_to_fragment_setRecord);
+            }
+        });
+
 
         record.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -135,13 +144,16 @@ public class FourthFragment extends Fragment {
     public void onResume() {
         super.onResume();
         Log.e("FourthFragment","----onResume()----");
+
+        headpic = new File(readheadpic());
         //更新头像
-        String file= readheadpic();
-        Bitmap pic = BitmapFactory.decodeFile(file);
-        if(pic!=null&&HeadPic!=null)
-        {
-            HeadPic.setImageBitmap(pic);
-        }
+        RequestOptions requestOptions = new RequestOptions();
+        requestOptions.diskCacheStrategy(DiskCacheStrategy.NONE);
+        requestOptions.skipMemoryCache(true);
+        Glide.with(mCotext)
+                .load(headpic)
+                .apply(requestOptions)
+                .into(HeadPic);
     }
 
     private String readheadpic() {
@@ -189,6 +201,7 @@ public class FourthFragment extends Fragment {
 
                     String json = NetUtils.readString(inputStream);
                     System.out.println(json + "json");
+                    inputStream.close();
                 }catch (Exception e){
                     e.printStackTrace();
                 }
@@ -209,7 +222,7 @@ public class FourthFragment extends Fragment {
         startActivity(intent);
     }
 
-    private void DownloadHeadPictoServer(){
+    private File DownloadHeadPicFromServer(String uname){
         int statusID = 1;
         //检查并新增头像图片的文件夹及文件
         String sdCardDir = Environment.getExternalStorageDirectory().getAbsolutePath()+"/Android/data/com.example.login/files/Pictures/";//获取SDCard目录
@@ -217,7 +230,16 @@ public class FourthFragment extends Fragment {
         if (!fileJA.exists()) {
             fileJA.mkdirs();
         }
-        File file = new File(sdCardDir, "UserIcon.png");
+        File file = null;
+        if(uname.equals(websocket_Manager.getUsername()))
+        {
+            file = new File(sdCardDir, "UserIcon.png");
+        }
+        else
+        {
+            file = new File(sdCardDir, uname+"Icon.png");
+        }
+
         if (!file.exists()) {
             try {
                 file.createNewFile();
@@ -225,7 +247,7 @@ public class FourthFragment extends Fragment {
                 e.printStackTrace();
             }
         }
-        String urlPath="http://www.lovecurry.club:8080/TravelApp/account/getHeadPic";
+        String urlPath="http://www.lovecurry.club:8080/TravelApp/account/getHeadpicN";
         URL url;
         try {
             url=new URL(urlPath);
@@ -236,9 +258,10 @@ public class FourthFragment extends Fragment {
             conn.setRequestMethod("POST");
             conn.setRequestProperty("ser-Agent", "Fiddler");
             conn.setRequestProperty("Cookie", JSESSIONID.getJSESSIONIDNAME());
-            System.out.println("JSESSIONID.getJSESSIONIDNAME():"+JSESSIONID.getJSESSIONIDNAME());
+            conn.setRequestProperty("uname",uname);
 
             int responseCode = conn.getResponseCode();
+            Log.d("Main_Activity","头像下载的返回码为"+responseCode);
             if(responseCode ==200){
                 //请求成功 获得返回的流
                 InputStream fis = conn.getInputStream();
@@ -254,7 +277,8 @@ public class FourthFragment extends Fragment {
                     }
                     outStream.close();
                     fis.close();
-                    Log.d("FourthFragment","下载头像图片成功");
+                    Log.d("Main_Activity","下载头像图片成功");
+                    return file;
                 }catch (Exception e) {
                     e.printStackTrace();
                 }finally {
@@ -264,11 +288,11 @@ public class FourthFragment extends Fragment {
                 }
             }else {
                 //请求失败
-                Log.e("FourthFragment","头像下载失败");
+                Log.e("Main_Activity","头像下载失败");
             }
-
         }catch (Exception e){
             e.printStackTrace();
         }
+        return file;
     }
 }

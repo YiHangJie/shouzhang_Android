@@ -56,7 +56,7 @@ public class POIList_Adapter extends BaseAdapter {
         TextView location = (TextView) convertView.findViewById(R.id.locationinfo);
         //img_icon.setBackgroundResource(mData.get(position).getaIcon());
         description.setText(mData.get(position).getTitle());
-        location.setText(mData.get(position).getText());
+        location.setText(mData.get(position).getAddress());
         description.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -68,7 +68,7 @@ public class POIList_Adapter extends BaseAdapter {
                 Thread dakaThread = new Thread(){
                     @Override
                     public void run() {
-                        num = sendlocation();
+                        num = sendlocation(mData.get(position));
                         //websocket_Manager.killwebsocket();
                     }
                 };
@@ -82,6 +82,7 @@ public class POIList_Adapter extends BaseAdapter {
                 if(num==1)
                 {
                     Toast.makeText (mContext,"打卡成功！", Toast.LENGTH_LONG ).show();
+
                 }
                 else if(num==0)
                 {
@@ -100,20 +101,17 @@ public class POIList_Adapter extends BaseAdapter {
         return convertView;
     }
 
-    private int sendlocation() {
+    private int sendlocation(LocationAddressInfo loc) {
 
         int statusID = 1;
-
-        System.out.println(Main_Activity.wei);
-        System.out.println(Main_Activity.jing);
-        System.out.println(Main_Activity.dakatime);
 
         String urlPath="http://www.lovecurry.club:8080/TravelApp/location/addCooridinate";
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date();
         Main_Activity.dakatime = df.format(date);
-        String content = "latitude="+ Main_Activity.wei+"&longitude="+ Main_Activity.jing+"&time="+ Main_Activity.dakatime;
-        Log.e("dakainformation: ",content);
+        String content = "latitude="+ loc.getLat()+"&longitude="+ loc.getLon()+"&time="+ df.format(date)
+                +"&title="+loc.getTitle()+"&address="+loc.getAddress()+"&typedes="+loc.getTypedes()+"&typecode="+loc.getTypecode();
+        Log.e("POIList_Adapter","打卡内容："+content);
         URL url;
         // 这里用sortWay变量 这样即使下拉刷新也能保持用户希望的排序方式
         try {
@@ -129,7 +127,7 @@ public class POIList_Adapter extends BaseAdapter {
             System.out.println("JSESSIONID.getJSESSIONIDNAME():"+JSESSIONID.getJSESSIONIDNAME());
 
             OutputStream os=conn.getOutputStream();
-            os.write(content.getBytes()); //字符串写进二进流
+            os.write(content.getBytes("UTF-8")); //字符串写进二进流
             os.flush();
             os.close();
 
@@ -147,6 +145,8 @@ public class POIList_Adapter extends BaseAdapter {
                 String status = conn.getHeaderField("status");
                 int dakastatus = Integer.parseInt(status);
                 Log.e("dakastatus: ","String Status = "+status+" int dakastatus = "+dakastatus);
+
+                inputStream.close();
 
                 if(dakastatus==200)
                 {

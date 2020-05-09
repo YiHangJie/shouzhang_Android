@@ -28,6 +28,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.login.JSESSIONID;
 import com.example.login.NetUtils;
 import com.example.login.R;
@@ -256,10 +259,15 @@ public class UpdateHeadPic_Activity extends AppCompatActivity implements View.On
         if(file.exists())
         {
             file.delete();
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         try {
             FileOutputStream out = new FileOutputStream(file);
-            bitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 50, out);
             out.flush();
             out.close();
             Log.d("UpdateHeadPic_Activity", "已经保存headpic");
@@ -268,6 +276,13 @@ public class UpdateHeadPic_Activity extends AppCompatActivity implements View.On
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        RequestOptions requestOptions = new RequestOptions();
+        requestOptions.diskCacheStrategy(DiskCacheStrategy.NONE);
+        Glide.with(this)
+                .load(file)
+                .apply(requestOptions)
+                .into(headpic_preview);
 
         Thread uploadheadpic = new Thread() {
             @Override
@@ -281,8 +296,7 @@ public class UpdateHeadPic_Activity extends AppCompatActivity implements View.On
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
-        headpic_preview.setImageBitmap(bitmap);
+        //headpic_preview.setImageBitmap(bitmap);
     }
 
     @Override

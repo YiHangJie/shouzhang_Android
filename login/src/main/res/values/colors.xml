@@ -7,4 +7,6 @@
     <color name="MycolorPrimary">#1E90FF</color>
     <color name="MycolorPrimaryDark">#4682B4</color>
     <color name="MycolorAccent">#87CEFA</color>
+
+    <color name="chat_icon">#4682B4</color>
 </resources>

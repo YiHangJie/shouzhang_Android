@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.login.Fragment.FirstFragment;
 import com.example.login.R;
 
@@ -82,8 +83,12 @@ public class RecycleAdapterDome extends RecyclerView.Adapter<RecyclerView.ViewHo
         if (holder instanceof RecycleAdapterDome.MyViewHolder) {
             ((MyViewHolder) holder).newstitle.setText(list.get(position));
 
-            if(picurl.get(position)!= "")
-                Glide.with(context).load(picurl.get(position)).into(((MyViewHolder) holder).pic);
+            if(picurl.get(position)!= "") {
+                RequestOptions requestOptions = new RequestOptions();
+                requestOptions.placeholder(R.mipmap.defalutpic);
+                requestOptions.error(R.mipmap.defalutpic);
+                Glide.with(context).load(picurl.get(position)).apply(requestOptions).into(((MyViewHolder) holder).pic);
+            }
             else
                 Glide.with(context).load(R.mipmap.defalutpic).into(((MyViewHolder) holder).pic);        //后台传来的json包里面，可能有些图片的picUrl是无效的，不是空的，以后要改进
 

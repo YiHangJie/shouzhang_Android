@@ -68,11 +68,21 @@ public class websocket_Manager extends Service {
                                     break;
                                 case "好友消息":
 //                                    Log.d("websocket_Manager","收到一条好友消息");
-                                    Intent i = new Intent();
-                                    i.setAction("com.example.login.servicecallback.content");
-                                    i.putExtra("message", message);
+                                    Intent i1 = new Intent();
+                                    i1.setAction("com.example.login.servicecallback.content");
+                                    i1.putExtra("type","text");
+                                    i1.putExtra("message", message);
 //                                    Log.e("websocket_Manager", String.valueOf(i));
-                                    ChatActivity.mContext.sendBroadcast(i);
+                                    ChatActivity.mContext.sendBroadcast(i1);
+                                    Log.e("websocket_Manager","已发送广播");
+                                    break;
+                                case "好友图片消息":
+                                    Intent i2 = new Intent();
+                                    i2.setAction("com.example.login.servicecallback.content");
+                                    i2.putExtra("type","img");
+                                    i2.putExtra("message", message);
+//                                    Log.e("websocket_Manager", String.valueOf(i));
+                                    ChatActivity.mContext.sendBroadcast(i2);
                                     Log.e("websocket_Manager","已发送广播");
                                     break;
                             }
@@ -85,7 +95,7 @@ public class websocket_Manager extends Service {
             }
         };
         websocket.start();
-
+        mHandler.postDelayed(heartBeatRunnable, HEART_BEAT_RATE);//开启心跳检测
         Log.d("websocket_Manager","--------creat()--------");
     }
 
@@ -99,6 +109,7 @@ public class websocket_Manager extends Service {
     {
         Log.e("JWebSClientService", username+" kill JWebSClientService");
         client.close();
+        client = null;
     }
 
 
@@ -170,7 +181,7 @@ public class websocket_Manager extends Service {
     private Runnable heartBeatRunnable = new Runnable() {
         @Override
         public void run() {
-            Log.e("JWebSocketClientService", "心跳包检测websocket连接状态");
+            Log.e("websocket_Manager", "心跳包检测websocket连接状态");
             if (client != null) {
                 if (client.isClosed()) {
                     reconnectWs();

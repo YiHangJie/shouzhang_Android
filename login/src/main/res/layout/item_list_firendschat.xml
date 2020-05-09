@@ -3,23 +3,32 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="140dp"
+    android:layout_height="70dp"
     android:layout_margin="8dp"
     android:clickable="true"
     app:cardCornerRadius="8dp"
     app:cardElevation="4dp">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="vertical"
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <ImageView
+            android:id="@+id/friend_headpic"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginLeft="20dp"
+            android:layout_gravity="center"
+            android:background="@drawable/head_image" />
+
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:id="@+id/txt_aName"
             android:textSize="25sp"
-            android:layout_marginLeft="35dp"/>
+            android:layout_marginLeft="35dp"
+            android:layout_gravity="center"/>
 
         <!--<TextView-->
             <!--android:layout_width="match_parent"-->

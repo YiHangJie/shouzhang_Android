@@ -122,9 +122,6 @@ public class FirstFragment extends Fragment implements AMapLocationListener, Poi
     private TextView informationhint;
     private LinkedList<LocationAddressInfo> data;//自己创建的数据集合
 
-//    private List<LocationAddressInfo> mData = new ArrayList<>();
-//    private LocationListAdapter listAdapter;
-
 
     private Handler handler = new Handler() {
         @Override
@@ -214,12 +211,6 @@ public class FirstFragment extends Fragment implements AMapLocationListener, Poi
             }
         };
         inidata.start();
-        try {
-            inidata.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        inidata.interrupt();
 
         adapterDome = new RecycleAdapterDome(this,context,title_list,picurl_list,time_list,web_list);
         if(adapterDome==null)
@@ -335,13 +326,32 @@ public class FirstFragment extends Fragment implements AMapLocationListener, Poi
         // 第一个参数表示搜索字符串，第二个参数表示poi搜索类型，第三个参数表示poi搜索区域（空字符串代表全国）
         query = new PoiSearch.Query("", key, Main_Activity.citycode);
         // 设置每页最多返回多少条poiitem
-        query.setPageSize(9);
+        query.setPageSize(15);
         // 设置查询页码
         query.setPageNum(currentPage);
 
         //构造 PoiSearch 对象，并设置监听
         poiSearch = new PoiSearch(context, query);
         poiSearch.setOnPoiSearchListener(this);
+        poiSearch.setBound(new PoiSearch.SearchBound(new LatLonPoint(Main_Activity.wei, Main_Activity.jing), 1000));
+        //调用 PoiSearch 的 searchPOIAsyn() 方法发送请求。
+        poiSearch.searchPOIAsyn();
+    }
+
+    protected void doRecSearchQuery(String key,int currentPage) {
+
+        //不输入城市名称有些地方搜索不到
+        // 第一个参数表示搜索字符串，第二个参数表示poi搜索类型，第三个参数表示poi搜索区域（空字符串代表全国）
+        query = new PoiSearch.Query("", key, Main_Activity.cityname);
+        // 设置每页最多返回多少条poiitem
+        query.setPageSize(24);
+        // 设置查询页码
+        query.setPageNum(currentPage);
+
+        //构造 PoiSearch 对象，并设置监听
+        poiSearch = new PoiSearch(context, query);
+        poiSearch.setOnPoiSearchListener(this);
+        //poiSearch.setBound(new PoiSearch.SearchBound(new LatLonPoint(Main_Activity.wei, Main_Activity.jing), 10000));
         //调用 PoiSearch 的 searchPOIAsyn() 方法发送请求。
         poiSearch.searchPOIAsyn();
     }
@@ -371,11 +381,15 @@ public class FirstFragment extends Fragment implements AMapLocationListener, Poi
                         LatLonPoint llp = item.getLatLonPoint();
                         double lon = llp.getLongitude();
                         double lat = llp.getLatitude();
+                        //返回POI类型描述
+                        String Typedes = item.getTypeDes();
+                        // 返回POI类型代码
+                        String Typecode = item.getTypeCode();
                         //返回POI的名称
                         String title = item.getTitle();
                         //返回POI的地址
                         String text = item.getSnippet();
-                        data.add(new LocationAddressInfo(String.valueOf(lon), String.valueOf(lat), title, text));
+                        data.add(new LocationAddressInfo(String.valueOf(lon), String.valueOf(lat), title, text,Typedes,Typecode));
                     }
                 }
             } else {
@@ -398,7 +412,7 @@ public class FirstFragment extends Fragment implements AMapLocationListener, Poi
                 //解析定位结果
                 //text_map.setText(amapLocation.getAddress());
                 String tempcitycode = amapLocation.getCityCode();
-                String city = amapLocation.getCity();
+                String cityname = amapLocation.getCity();
                 String Adcode = amapLocation.getAdCode();
                 String PoiName = amapLocation.getPoiName();
 
@@ -406,8 +420,10 @@ public class FirstFragment extends Fragment implements AMapLocationListener, Poi
                 if(!(Adcode.equals(Main_Activity.citycode))) {
                     Main_Activity.citycode = Adcode;
                     loadWeather();
+                    
                 }
 
+                Main_Activity.cityname = cityname;
                 Main_Activity.wei = amapLocation.getLatitude();//获取纬度
                 Main_Activity.jing = amapLocation.getLongitude();//获取经度
                 amapLocation.getAccuracy();//获取精度信息
@@ -496,11 +512,7 @@ public class FirstFragment extends Fragment implements AMapLocationListener, Poi
 
         Log.e("Main_Activity.citycode ", Main_Activity.citycode);
         citycodetest.start();
-        try {
-            citycodetest.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+
     }
 
 
@@ -517,27 +529,6 @@ public class FirstFragment extends Fragment implements AMapLocationListener, Poi
                 break;
             default:break;
         }
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        Thread citycodetest = new Thread() {
-            public void run() {
-                sendcitycode(Main_Activity.citycode);
-            }
-        };
-        citycodetest.start();
-        try {
-            citycodetest.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        citycodetest.interrupt();
-        //开始定位
-        initLocation();
-        //加载天气
-        loadWeather();
     }
 
     @Override
@@ -736,7 +727,7 @@ public class FirstFragment extends Fragment implements AMapLocationListener, Poi
                 String json= NetUtils.readString(inputStream);
                 //System.out.println(json);
                 //System.out.println("Main_Activity json:"+json);
-
+                inputStream.close();
                 JSONArray newsarray = new JSONArray(json);
 
                 System.out.println(newsarray.length()+"条news");
@@ -828,71 +819,5 @@ public class FirstFragment extends Fragment implements AMapLocationListener, Poi
         it.putExtra(EXTRA_MESSAGE, message);
         it.putExtra(TITLE,title);
         startActivity(it);
-    }
-
-    private int sendlocation() {
-
-        int statusID = 1;
-
-        System.out.println(Main_Activity.wei);
-        System.out.println(Main_Activity.jing);
-        System.out.println(Main_Activity.dakatime);
-
-        String urlPath="http://www.lovecurry.club:8080/TravelApp/location/addCooridinate";
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date date = new Date();
-        Main_Activity.dakatime = df.format(date);
-        String content = "latitude="+ Main_Activity.wei+"&longitude="+ Main_Activity.jing+"&time="+ Main_Activity.dakatime;
-        Log.e("dakainformation: ",content);
-        URL url;
-        // 这里用sortWay变量 这样即使下拉刷新也能保持用户希望的排序方式
-        try {
-            url=new URL(urlPath);
-            HttpURLConnection conn=(HttpURLConnection) url.openConnection(); //开启连接
-            conn.setConnectTimeout(5000);
-            conn.setDoOutput(true);
-            conn.setDoInput(true);
-            conn.setRequestMethod("POST");
-            conn.setRequestProperty("ser-Agent", "Fiddler");
-
-            conn.setRequestProperty("Cookie", JSESSIONID.getJSESSIONIDNAME());
-            System.out.println("JSESSIONID.getJSESSIONIDNAME():"+JSESSIONID.getJSESSIONIDNAME());
-
-            OutputStream os=conn.getOutputStream();
-            os.write(content.getBytes()); //字符串写进二进流
-            os.flush();
-            os.close();
-
-            int code=conn.getResponseCode();
-            System.out.println(code);
-            if(code==200){   //与后台交互成功返回 200
-
-                //读取返回的json数据
-                InputStream inputStream=conn.getInputStream();
-                // 调用自己写的NetUtils() 将流转成string类型
-                String json= NetUtils.readString(inputStream);
-                //System.out.println(json);
-                System.out.println("Main_Activity json:"+json);
-
-                String status = conn.getHeaderField("status");
-                int dakastatus = Integer.parseInt(status);
-                Log.e("dakastatus: ","String Status = "+status+" int dakastatus = "+dakastatus);
-
-                if(dakastatus==200)
-                {
-                    statusID  = 1;
-                    return statusID;       //打卡成功
-                }
-                else if(dakastatus==-1)
-                {
-                    statusID  = 0;
-                    return statusID;       //打卡失败
-                }
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        statusID  = -1;
-        return statusID;                  //数据提交失败
     }
 }

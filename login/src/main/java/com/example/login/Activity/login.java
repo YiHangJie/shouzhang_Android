@@ -221,7 +221,7 @@ public class login extends AppCompatActivity {
             os.flush();
             os.close();
 
-
+            os.close();
             int code=conn.getResponseCode();
             System.out.println(code);
             if(code==200){   //与后台交互成功返回 200
@@ -356,7 +356,7 @@ public class login extends AppCompatActivity {
             }
 
             id = Integer.parseInt(judge);
-
+            inputStream.close();
         }catch (Exception e){
             e.printStackTrace();
         }

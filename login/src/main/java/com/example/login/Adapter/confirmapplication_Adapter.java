@@ -47,7 +47,7 @@ public class confirmapplication_Adapter extends BaseAdapter {
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
-//        convertView = LayoutInflater.from(mContext).inflate(R.layout.item_friendapplication,parent,false);
+
         convertView = LayoutInflater.from(mContext).inflate(R.layout.item_friendapplication,parent,false);
 
         final TextView friend_name = (TextView) convertView.findViewById(R.id.friend_name);
@@ -151,31 +151,6 @@ public class confirmapplication_Adapter extends BaseAdapter {
             int code=conn.getResponseCode();
             System.out.println(code);
             if(code==200){   //与后台交互成功返回 200
-
-//                //读取返回的json数据
-//                InputStream inputStream=conn.getInputStream();
-//                // 调用自己写的NetUtils() 将流转成string类型
-//                String json= NetUtils.readString(inputStream);
-//                //System.out.println(json);
-//                System.out.println("Main_Activity json:"+json);
-//
-//                if(json.equals("用户未找到"))
-//                {
-//                    return 0;
-//                }
-//
-//                JSONObject friendinfo = new JSONObject(json);
-//                String friendsname = friendinfo.getString("uname");
-//                Log.d("Fragment_addFriend", "friendsname:"+friendsname);
-//                String picUrl = friendinfo.getString("headpicUrl");
-//                Log.d("Fragment_addFriend", "picUrl:"+picUrl);
-//
-//
-//                if(picUrl==null)
-//                {
-//                    picUrl = "";
-//                }
-
                 return 1;
             }
             else

@@ -21,6 +21,9 @@
         <external-path
             name="userpic"
             path="Android/data/com.example.login/files/Pictures"/>
+        <external-path
+            name="chatImg"
+            path="Android/data/com.example.login/files/chat_Img"/>
         <!-- Environment.getExternalStorageDirectory() + "/path/" -->
 <!--        <external-path-->
 <!--            name="files_root"-->

@@ -4,14 +4,18 @@ public class LocationAddressInfo {
     private String lon;
     private String lat;
     private String title;
-    private String text;
+    private String address;
+    private String Typedes;
+    private String Typecode;
 
-    public LocationAddressInfo(String lon,String lat,String title,String text)
+    public LocationAddressInfo(String lon,String lat,String title,String text,String Typedes, String Typecode)
     {
         this.lon = lon;
         this.lat = lat;
         this.title = title;
-        this.text = text;
+        this.address = text;
+        this.Typedes = Typedes;
+        this.Typecode = Typecode;
     }
 
     public String getLon()
@@ -29,9 +33,19 @@ public class LocationAddressInfo {
         return title;
     }
 
-    public String getText()
+    public String getAddress()
     {
-        return text;
+        return address;
+    }
+
+    public String getTypedes()
+    {
+        return Typedes;
+    }
+
+    public String getTypecode()
+    {
+        return Typecode;
     }
 
 }

@@ -23,24 +23,33 @@ import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.maps.AMap;
 import com.amap.api.maps.LocationSource;
 import com.amap.api.maps.MapView;
+import com.bumptech.glide.Glide;
 import com.example.login.Adapter.RecycleAdapterDome;
+import com.example.login.Fragment.ThirdFragment;
+import com.example.login.Friend;
+import com.example.login.JSESSIONID;
 import com.example.login.NetUtils;
 import com.example.login.R;
 import com.example.login.websocket_Manager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import org.json.JSONArray;
+
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.LinkedList;
 import java.util.List;
 
 public class Main_Activity extends AppCompatActivity  {
 
     public static final String EXTRA_MESSAGE = "Main_EXTRA_MESSAGE";
     public static final String TITLE = "Main_TITLE";
-    private static Context context;
+    public static Context context;
 
 
     private FloatingActionButton daka;
@@ -66,10 +75,13 @@ public class Main_Activity extends AppCompatActivity  {
     //标识，用于判断是否只显示一次定位信息和用户重新定位
     private boolean isFirstLoc = true;
 
+    public static List<Friend> friendList = new LinkedList<Friend>();
+
     public static double wei = 0;
     public static double jing = 0;
     public static String dakatime = "";
     public static String citycode = "110000";
+    public static String cityname = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +101,21 @@ public class Main_Activity extends AppCompatActivity  {
         NavigationUI.setupWithNavController(bottomNavigationView,navController);
 
         context = this;
+
+        Thread GetFriendsName = new Thread() {
+            @Override
+            public void run() {
+                getFriendsName();
+                Log.e("ThirdFragment", "获取好友列表");
+                for(int i = 0;i<friendList.size();i++)
+                {
+                    File target = DownloadHeadPicFromServer(friendList.get(i).getaName());
+
+                }
+                File target = DownloadHeadPicFromServer(websocket_Manager.getUsername());
+            }
+        };
+        GetFriendsName.start();
 //        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
 //        title_list = new ArrayList<String>();
 //        picurl_list = new ArrayList<String>();
@@ -268,59 +295,10 @@ public class Main_Activity extends AppCompatActivity  {
         Log.e("Main_activity","onResume()");
     }
 
-//    @Override
-//    protected void onStop() {
-//        super.onStop();
-//        final String uname_close = websocket_Manager.getUsername();
-//        Log.e("Main_activity","onStop()");
-//        Log.e("uname",websocket_Manager.getUsername());
-//        //activyty被销毁之前向后台发送数据
-//        Thread closeActivity = new Thread()
-//        {
-//            public void run()
-//            {
-//                String urlPath="http://47.103.66.24:8080/TravelApp/account/DoClose";
-//                //    String urlPath="http://192.168.42.207:8080/20170112/login/toJsonMain.action"; 这个是实体机(手机)的端口
-//                URL url;
-//                int id = 0 ;
-//                try {
-//                    url = new URL(urlPath);
-//
-//                    String content;
-//
-//                    HttpURLConnection conn = (HttpURLConnection) url.openConnection(); //开启连接
-//                    conn.setConnectTimeout(5000);
-//
-//                    conn.setDoOutput(true);
-//
-//                    conn.setDoInput(true);
-//
-//                    conn.setRequestMethod("POST");
-//
-//                    conn.setRequestProperty("ser-Agent", "Fiddler");
-//
-//                    conn.setRequestProperty("uname", uname_close);
-//
-//                    Log.d("uname",websocket_Manager.getUsername());
-//
-//                    InputStream inputStream = conn.getInputStream();
-//                    // 调用自己写的NetUtils() 将流转成string类型
-//
-//                    String json = NetUtils.readString(inputStream);
-//                    System.out.println(json + "json");
-//                }catch (Exception e){
-//                    e.printStackTrace();
-//                }
-//            }
-//        };
-//        closeActivity.start();
-//        try {
-//            closeActivity.join();
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//        //websocket_Manager.killwebsocket();
-//    }
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
 
     @Override
     protected void onDestroy() {
@@ -362,6 +340,7 @@ public class Main_Activity extends AppCompatActivity  {
 
                     String json = NetUtils.readString(inputStream);
                     System.out.println(json + "json");
+                    inputStream.close();
                 }catch (Exception e){
                     e.printStackTrace();
                 }
@@ -374,6 +353,132 @@ public class Main_Activity extends AppCompatActivity  {
             e.printStackTrace();
         }
         websocket_Manager.killwebsocket();
+    }
+
+    public void getFriendsName() {
+
+        // 网络请求
+        String urlPath="http://www.lovecurry.club:8080/TravelApp/DoGetFriend";
+        URL url;
+        // 这里用sortWay变量 这样即使下拉刷新也能保持用户希望的排序方式
+        try {
+            url=new URL(urlPath);
+            HttpURLConnection conn=(HttpURLConnection) url.openConnection(); //开启连接
+            conn.setConnectTimeout(5000);
+            conn.setDoOutput(true);
+            conn.setDoInput(true);
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("ser-Agent", "Fiddler");
+            conn.setRequestProperty("Cookie", JSESSIONID.getJSESSIONIDNAME());
+
+            InputStream inputStream=conn.getInputStream();
+            // 调用自己写的NetUtils() 将流转成string类型
+            String json= NetUtils.readString(inputStream);
+            //System.out.println(json);
+            System.out.println("Main_Activity json:"+json);
+            inputStream.close();
+            int code=conn.getResponseCode();
+            System.out.println(code);
+            if(code==200){   //与后台交互成功返回 200
+
+//                //读取返回的json数据
+//                JSONObject weattherinfo = new JSONObject(json);
+
+//                String latitude = weattherinfo.getString("latitude");
+//                String time = weattherinfo.getString("time");
+//                String longitude = weattherinfo.getString("longitude");
+
+                JSONArray newsarray = new JSONArray(json);
+
+                System.out.println(newsarray.length()+"个好友");
+
+                for (int i=0;i<newsarray.length();i++){
+                    //String uname = newsarray.getJSONObject(i).getString("uname");
+                    String uname = newsarray.getString(i);
+//                    title_list.add(utf8_title);
+//                    picurl_list.add(utf8_picurl);
+//                    time_list.add(utf8_time);
+//                    web_list.add(utf8_url);
+                    friendList.add(new Friend(uname,""));
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private File DownloadHeadPicFromServer(String uname){
+        int statusID = 1;
+        //检查并新增头像图片的文件夹及文件
+        String sdCardDir = Environment.getExternalStorageDirectory().getAbsolutePath()+"/Android/data/com.example.login/files/Pictures/";//获取SDCard目录
+        File fileJA = new File(sdCardDir);
+        if (!fileJA.exists()) {
+            fileJA.mkdirs();
+        }
+        File file = null;
+        if(uname.equals(websocket_Manager.getUsername()))
+        {
+            file = new File(sdCardDir, "UserIcon.png");
+        }
+        else
+        {
+            file = new File(sdCardDir, uname+"Icon.png");
+        }
+
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        String urlPath="http://www.lovecurry.club:8080/TravelApp/account/getHeadpicN";
+        URL url;
+        try {
+            url=new URL(urlPath);
+            HttpURLConnection conn=(HttpURLConnection) url.openConnection(); //开启连接
+            conn.setConnectTimeout(5000);
+            conn.setDoOutput(true);
+            conn.setDoInput(true);
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("ser-Agent", "Fiddler");
+            conn.setRequestProperty("Cookie", JSESSIONID.getJSESSIONIDNAME());
+            conn.setRequestProperty("uname",uname);
+
+            int responseCode = conn.getResponseCode();
+            Log.d("Main_Activity","头像下载的返回码为"+responseCode);
+            if(responseCode ==200){
+                //请求成功 获得返回的流
+                InputStream fis = conn.getInputStream();
+                byte[] by= new byte[1024];
+                int n=0;
+                FileOutputStream outStream = null;
+                try{
+                    outStream = new FileOutputStream(file);
+                    while((n = fis.read(by))!=-1)
+                    {
+                        outStream.write(by,0,n);
+                        outStream.flush();
+                    }
+                    outStream.close();
+                    fis.close();
+                    Log.d("Main_Activity","下载头像图片成功");
+                    return file;
+                }catch (Exception e) {
+                    e.printStackTrace();
+                }finally {
+                    if(outStream!=null){
+                        outStream.close();
+                    }
+                }
+            }else {
+                //请求失败
+                Log.e("Main_Activity","头像下载失败");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return file;
     }
 
     //    private void initLocation(){

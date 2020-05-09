@@ -2,25 +2,34 @@ package com.example.login.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.login.Animal;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
+import com.example.login.Fragment.ThirdFragment;
+import com.example.login.Friend;
 import com.example.login.Activity.ChatActivity;
 import com.example.login.R;
 
+import java.io.File;
 import java.util.LinkedList;
 
 public class AnimalAdapter extends BaseAdapter implements View.OnClickListener{
-    private LinkedList<Animal> mData;
+    private LinkedList<Friend> mData;
     private Context mContext;
 
-    public AnimalAdapter(LinkedList<Animal> mData, Context mContext) {
+    public AnimalAdapter(LinkedList<Friend> mData, Context mContext) {
         this.mData = mData;
         this.mContext = mContext;
     }
@@ -60,6 +69,15 @@ public class AnimalAdapter extends BaseAdapter implements View.OnClickListener{
                 mContext.startActivity(intent);
             }
         });
+        ImageView fHeadPic = (ImageView) convertView.findViewById(R.id.friend_headpic);
+        String file = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Android/data/com.example.login/files/Pictures/" + mData.get(position).getaName()+"Icon.png";
+//        Bitmap pic = BitmapFactory.decodeFile(file);
+//        fHeadPic.setImageBitmap(pic);
+        File pic = new File(file);
+
+        Glide.with(mContext)
+                .load(pic)
+                .into(fHeadPic);
         return convertView;
     }
 
