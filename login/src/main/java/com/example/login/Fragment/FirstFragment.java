@@ -340,6 +340,7 @@ public class FirstFragment extends Fragment implements AMapLocationListener, Poi
 
     protected void doRecSearchQuery(String key,int currentPage) {
 
+
         //不输入城市名称有些地方搜索不到
         // 第一个参数表示搜索字符串，第二个参数表示poi搜索类型，第三个参数表示poi搜索区域（空字符串代表全国）
         query = new PoiSearch.Query("", key, Main_Activity.cityname);
