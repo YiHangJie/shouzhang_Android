@@ -38,6 +38,9 @@ import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.LocationSource;
 import com.amap.api.maps.MapView;
 import com.amap.api.maps.UiSettings;
+import com.amap.api.maps.model.LatLng;
+import com.amap.api.maps.model.Marker;
+import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.amap.api.services.core.AMapException;
 import com.amap.api.services.core.LatLonPoint;
@@ -67,9 +70,12 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class FirstFragment extends Fragment implements AMapLocationListener, PoiSearch.OnPoiSearchListener {
 
@@ -114,13 +120,16 @@ public class FirstFragment extends Fragment implements AMapLocationListener, Poi
     private boolean isFirstLoc = true;
 
     private static final int REQUEST_PERMISSION_LOCATION = 0;
+    private int Pagesize = 0;//搜索POI时设置的结果页面条数
     private String keyWord = "";// 要输入的poi搜索关键字
-    private PoiResult poiResult; // poi返回的结果
+    private PoiResult poiResult; // 返回的推荐POI结果
     private int currentPage = 0;// 当前页面，从0开始计数
     private PoiSearch.Query query;// Poi查询条件类
-    private PoiSearch       poiSearch;// POI搜索
+    private PoiSearch poiSearch;// POI搜索
     private TextView informationhint;
     private LinkedList<LocationAddressInfo> data;//自己创建的数据集合
+
+    private LinkedList<Marker> markers = new LinkedList<Marker>();//地图上的图钉对象列表
 
 
     private Handler handler = new Handler() {
@@ -191,6 +200,18 @@ public class FirstFragment extends Fragment implements AMapLocationListener, Poi
             settings.setMyLocationButtonEnabled(true);
             aMap.setMyLocationEnabled(true);//显示定位层并且可以触发定位,默认是flase
             aMap.moveCamera(CameraUpdateFactory.zoomTo(16)); //和 setPosition()方法冲突，只设置缩放大小时使用
+//            aMap.setInfoWindowAdapter(this);//设置地点的infowindow的适配器
+
+//            AMap.OnMarkerClickListener markerClickListener = new AMap.OnMarkerClickListener() {
+//                // marker 对象被点击时回调的接口
+//                // 返回 true 则表示接口已响应事件，否则返回false
+//                @Override
+//                public boolean onMarkerClick(Marker marker) {
+//
+//                    return true;
+//                }
+//            };
+//            aMap.setOnMarkerClickListener(markerClickListener);
         }
 
         MyLocationStyle myLocationStyle = new MyLocationStyle();
@@ -254,43 +275,12 @@ public class FirstFragment extends Fragment implements AMapLocationListener, Poi
             Toast.makeText(getActivity(),"已开启定位权限",Toast.LENGTH_LONG).show();
         }
 
-//        Thread citycodetest = new Thread() {
-//            public void run() {
-//                sendcitycode(Main_Activity.citycode);
-//            }
-//        };      //330104是江干区    330105是拱墅区
-//        citycodetest.start();
-//        try {
-//            citycodetest.join();
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//        citycodetest.interrupt();
-
-//        AMapLocationListener aMapLocationListener = new AMapLocationListener() {
-//            @Override
-//            public void onLocationChanged(AMapLocation aMapLocation) {
-//                String citycode = aMapLocation.getCityCode();
-//                sendcitycode(citycode);
-//                Main_Activity.wei = aMapLocation.getLatitude();//获取纬度
-//                Main_Activity.jing = aMapLocation.getLongitude();//获取经度
-//                aMapLocation.getAccuracy();//获取精度信息
-//                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//                Date date = new Date(aMapLocation.getTime());
-//                df.format(date);//定位时间
-//                Main_Activity.dakatime = df.toPattern();
-//                Main_Activity.citycode = aMapLocation.getCityCode();
-//            }
-//        };
-
 
         daka.setOnClickListener(new View.OnClickListener() {
             int num = 20;
             @Override
             public void onClick(View v) {
-//                doSearchQuery("110000|110100|110101|110102|110103|110104|110105|110106|110200|110201|110202|110203|110204|110205|110206|110207|110208|110209|050000" );
                 doSearchQuery("110000|050000|060000|070000|080000|100000|120000" );
-                //doSearchQuery("肯德基");
 //                View popupView = getActivity().getLayoutInflater().inflate(R.layout.poi_listview, null);
 //                final PopupWindow window = new PopupWindow(popupView, WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
 //                window.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#F8F8F8")));
@@ -321,6 +311,7 @@ public class FirstFragment extends Fragment implements AMapLocationListener, Poi
     }
 
     protected void doSearchQuery(String key) {
+
         currentPage = 0;
         //不输入城市名称有些地方搜索不到
         // 第一个参数表示搜索字符串，第二个参数表示poi搜索类型，第三个参数表示poi搜索区域（空字符串代表全国）
@@ -338,21 +329,19 @@ public class FirstFragment extends Fragment implements AMapLocationListener, Poi
         poiSearch.searchPOIAsyn();
     }
 
-    protected void doRecSearchQuery(String key,int currentPage) {
-
-
+    protected void doRecSearchQuery(String key,int Pagesize) {
         //不输入城市名称有些地方搜索不到
         // 第一个参数表示搜索字符串，第二个参数表示poi搜索类型，第三个参数表示poi搜索区域（空字符串代表全国）
         query = new PoiSearch.Query("", key, Main_Activity.cityname);
         // 设置每页最多返回多少条poiitem
-        query.setPageSize(24);
+        query.setPageSize(Pagesize);
         // 设置查询页码
-        query.setPageNum(currentPage);
+        query.setPageNum(0);
 
         //构造 PoiSearch 对象，并设置监听
         poiSearch = new PoiSearch(context, query);
         poiSearch.setOnPoiSearchListener(this);
-        //poiSearch.setBound(new PoiSearch.SearchBound(new LatLonPoint(Main_Activity.wei, Main_Activity.jing), 10000));
+        poiSearch.setBound(new PoiSearch.SearchBound(new LatLonPoint(Main_Activity.wei, Main_Activity.jing), 10000));
         //调用 PoiSearch 的 searchPOIAsyn() 方法发送请求。
         poiSearch.searchPOIAsyn();
     }
@@ -364,18 +353,24 @@ public class FirstFragment extends Fragment implements AMapLocationListener, Poi
             // 解析result   获取搜索poi的结果
             if (Result != null && Result.getQuery() != null) {
                 if (Result.getQuery().equals(query)) {  // 是否是同一条
-                    poiResult = Result;
+
+                    if(Result.getQuery().getPageSize()==Pagesize)   //判断是否是推荐结果的部分
+                    {
+                        poiResult = Result;//保存推荐结果至成员变量
+                        showRecOnMap();
+                        return;
+                    }
+                    data.clear();
 
                     // 取得第一页的poiitem数据，页数从数字0开始
                     //poiResult.getPois()可以获取到PoiItem列表
-                    List<PoiItem> poiItems = poiResult.getPois();
+                    List<PoiItem> poiItems = Result.getPois();
 
                     //若当前城市查询不到所需POI信息，可以通过result.getSearchSuggestionCitys()获取当前Poi搜索的建议城市
-                    List<SuggestionCity> suggestionCities = poiResult.getSearchSuggestionCitys();
+                    List<SuggestionCity> suggestionCities = Result.getSearchSuggestionCitys();
                     //如果搜索关键字明显为误输入，则可通过result.getSearchSuggestionKeywords()方法得到搜索关键词建议。
-                    List<String> suggestionKeywords =  poiResult.getSearchSuggestionKeywords();
+                    List<String> suggestionKeywords =  Result.getSearchSuggestionKeywords();
 
-                    data.clear();
                     //解析获取到的PoiItem列表
                     for(PoiItem item : poiItems){
                         //获取经纬度对象
@@ -390,7 +385,8 @@ public class FirstFragment extends Fragment implements AMapLocationListener, Poi
                         String title = item.getTitle();
                         //返回POI的地址
                         String text = item.getSnippet();
-                        data.add(new LocationAddressInfo(String.valueOf(lon), String.valueOf(lat), title, text,Typedes,Typecode));
+                        LocationAddressInfo l = new LocationAddressInfo(String.valueOf(lon), String.valueOf(lat), title, text,Typedes,Typecode);
+                        data.add(l);
                     }
                 }
             } else {
@@ -462,7 +458,68 @@ public class FirstFragment extends Fragment implements AMapLocationListener, Poi
                 mLocationClient.stopLocation();
             }
         }
+        getRec();
     }
+
+    private void getRec() {
+//        List<String> rectypes = this.getRectype();
+//        List<String> rectypes = Arrays.asList("110000|050000|060000|070000|080000|100000|120000");
+        Pagesize = 5;
+//        for (int i = 0;i<rectypes.size();i++)
+//        {
+//            doRecSearchQuery(rectypes.get(i),Pagesize);
+//        }
+        //doRecSearchQuery("110000|050000|060000|070000|080000|100000|120000",Pagesize);
+        Thread getrec = new Thread()
+        {
+            @Override
+            public void run() {
+                List<String> l = getRectype();
+                StringBuffer param = new StringBuffer(l.get(0));
+                for (int i = 1;i<l.size();i++)
+                {
+                    param.append("|"+l.get(i));
+                }
+                Log.e("FirstFragment",param.toString());
+                doRecSearchQuery(param.toString(),Pagesize);
+                for(Marker m : markers )
+                {
+                    m.destroy();
+                }
+            }
+        };
+        getrec.start();
+
+    }
+
+    private void showRecOnMap() {
+
+        List<PoiItem> poiItems = poiResult.getPois();
+
+        //解析获取到的PoiItem列表
+        for(PoiItem item : poiItems){
+            //获取经纬度对象
+            LatLonPoint llp = item.getLatLonPoint();
+            double lon = llp.getLongitude();
+            double lat = llp.getLatitude();
+            //返回POI类型描述
+            String Typedes = item.getTypeDes();
+            // 返回POI类型代码
+            String Typecode = item.getTypeCode();
+            //返回POI的名称
+            String title = item.getTitle();
+            //返回POI的地址
+            String text = item.getSnippet();
+            LocationAddressInfo l = new LocationAddressInfo(String.valueOf(lon), String.valueOf(lat), title, text,Typedes,Typecode);
+
+            LatLng latLng = new LatLng(Double.parseDouble(l.getLat()),Double.parseDouble(l.getLon()));
+            final Marker marker = aMap.addMarker(new MarkerOptions().position(latLng).title(l.getTitle()).snippet(l.getTypedes()));
+            markers.add(marker);
+            marker.showInfoWindow();
+        }
+    }
+
+
 
     private void initLocation(){
         //声明AMapLocationClient类对象
@@ -484,7 +541,7 @@ public class FirstFragment extends Fragment implements AMapLocationListener, Poi
         //设置是否允许模拟位置,默认为false，不允许模拟位置
         mLocationOption.setMockEnable(false);
         //设置定位间隔,单位毫秒,默认为2000ms
-        mLocationOption.setInterval(2000);
+        mLocationOption.setInterval(20000);
         //给定位客户端对象设置定位参数
         mLocationClient.setLocationOption(mLocationOption);
         //启动定位
@@ -612,99 +669,6 @@ public class FirstFragment extends Fragment implements AMapLocationListener, Poi
         mLocationClient = null;
     }
 
-    //    public static String sHA1(Context context) {
-//        try {
-//            PackageInfo info = context.getPackageManager().getPackageInfo(
-//                    context.getPackageName(), PackageManager.GET_SIGNATURES);
-//            byte[] cert = info.signatures[0].toByteArray();
-//            MessageDigest md = MessageDigest.getInstance("SHA1");
-//            byte[] publicKey = md.digest(cert);
-//            StringBuffer hexString = new StringBuffer();
-//            for (int i = 0; i < publicKey.length; i++) {
-//                String appendString = Integer.toHexString(0xFF & publicKey[i])
-//                        .toUpperCase(Locale.US);
-//                if (appendString.length() == 1)
-//                    hexString.append("0");
-//                hexString.append(appendString);
-//                hexString.append(":");
-//            }
-//            String result = hexString.toString();
-//            return result.substring(0, result.length()-1);
-//        } catch (PackageManager.NameNotFoundException e) {
-//            e.printStackTrace();
-//        } catch (NoSuchAlgorithmException e) {
-//            e.printStackTrace();
-//        }
-//        return null;
-//    }
-//
-//    private void location() {
-//        //初始化定位
-//        mLocationClient = new AMapLocationClient(getApplicationContext());
-//        //设置定位回调监听
-//        mLocationClient.setLocationListener(this);
-//        //初始化定位参数
-//        mLocationOption = new AMapLocationClientOption();
-//        //设置定位模式为Hight_Accuracy高精度模式，Battery_Saving为低功耗模式，Device_Sensors是仅设备模式
-//        mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
-//        //设置是否返回地址信息（默认返回地址信息）
-//        mLocationOption.setNeedAddress(true);
-//        //设置是否只定位一次,默认为false
-//        mLocationOption.setOnceLocation(true);
-//        //设置是否强制刷新WIFI，默认为强制刷新
-//        mLocationOption.setWifiActiveScan(true);
-//        //设置是否允许模拟位置,默认为false，不允许模拟位置
-//        mLocationOption.setMockEnable(false);
-//        //设置定位间隔,单位毫秒,默认为2000ms
-//        mLocationOption.setInterval(2000);
-//        //给定位客户端对象设置定位参数
-//        mLocationClient.setLocationOption(mLocationOption);
-//        //启动定位
-//        mLocationClient.startLocation();
-//    }
-//
-//    @Override
-//    protected void onDestroy() {
-//        super.onDestroy();
-//        //在activity执行onDestroy时执行mMapView.onDestroy()，实现地图生命周期管理
-//        mapView.onDestroy();
-//        mLocationClient.stopLocation();//停止定位
-//        mLocationClient.onDestroy();//销毁定位客户端。
-//    }
-//
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//        //在activity执行onResume时执行mMapView.onResume ()，实现地图生命周期管理
-//        mapView.onResume();
-//    }
-//
-//    @Override
-//    protected void onPause() {
-//        super.onPause();
-//        //在activity执行onPause时执行mMapView.onPause ()，实现地图生命周期管理
-//        mapView.onPause();
-//    }
-//
-//    @Override
-//    protected void onSaveInstanceState(Bundle outState) {
-//        super.onSaveInstanceState(outState);
-//        //在activity执行onSaveInstanceState时执行mMapView.onSaveInstanceState (outState)，实现地图生命周期管理
-//        mapView.onSaveInstanceState(outState);
-//    }
-//
-
-
-//    @Override
-//    public void activate(OnLocationChangedListener onLocationChangedListener) {
-//        mListener = onLocationChangedListener;
-//    }
-//
-//    @Override
-//    public void deactivate() {
-//        mListener = null;
-//    }
-
     public void loadmore() {
         // 网络请求
         String urlPath="http://www.lovecurry.club:8080/TravelApp/news/DoNews";
@@ -814,6 +778,52 @@ public class FirstFragment extends Fragment implements AMapLocationListener, Poi
         return new JSONObject();
     }
 
+    private List<String> getRectype() {
+        ArrayList<String> rectype = new ArrayList<String>();
+        String urlPath="http://www.lovecurry.club:8080/TravelApp/location/getRecommend";
+        URL url;
+        try {
+            url=new URL(urlPath);
+            HttpURLConnection conn=(HttpURLConnection) url.openConnection(); //开启连接
+            conn.setConnectTimeout(5000);
+            conn.setDoOutput(true);
+            conn.setDoInput(true);
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("ser-Agent", "Fiddler");
+            conn.setRequestProperty("Cookie", JSESSIONID.getJSESSIONIDNAME());
+
+            int code=conn.getResponseCode();
+            System.out.println(code);
+            if(code==200){   //与后台交互成功返回 200
+
+                //读取返回的json数据
+                InputStream inputStream=conn.getInputStream();
+                // 调用自己写的NetUtils() 将流转成string类型
+                String src= NetUtils.readString(inputStream);
+                //System.out.println(json);
+
+                String pattern = "\\'\\d{6}\\'";
+                Pattern p = Pattern.compile(pattern);
+
+                Matcher matcher = p.matcher(src);
+
+                List<String> matchStrs = new ArrayList<>();
+                while(matcher.find())
+                {
+
+                    matchStrs.add(matcher.group().replaceAll("\\'",""));
+
+                    System.out.println(matcher.group());
+                }
+
+                return matchStrs;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ArrayList<String>();
+    }
+
     public void GetWeb(String message,String title)
     {
         Intent it = new Intent(getActivity(), News_Activity.class);
@@ -821,4 +831,5 @@ public class FirstFragment extends Fragment implements AMapLocationListener, Poi
         it.putExtra(TITLE,title);
         startActivity(it);
     }
+
 }

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <meta charset="utf-8" />
     <title>调查问卷</title>
     <link rel="stylesheet" href="style.css" />
@@ -45,23 +45,23 @@
       }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"></script>
-  </head>
-  <body>
-    <div class="yemian">
-      <h1>先做个小调查吧</h1>
-      <h2>你都去过哪些地方呢</h2>
-      <form name="form">
+</head>
+<body>
+<div class="yemian">
+    <h1>先做个小调查吧</h1>
+    <h2>你都去过哪些地方呢</h2>
+    <form name="form">
         <div class="textbox"></div>
         <input type="submit" class="submit btn" value="完成" />
-      </form>
-    </div>
-    <script
-      src="https://cdn.jsdelivr.net/npm/axios@0.19.2/dist/axios.min.js"
-      integrity="sha256-T/f7Sju1ZfNNfBh7skWn0idlCBcI3RwdLSS4/I7NQKQ="
-      crossorigin="anonymous"
-    ></script>
+    </form>
+</div>
+<script
+        src="https://cdn.jsdelivr.net/npm/axios@0.19.2/dist/axios.min.js"
+        integrity="sha256-T/f7Sju1ZfNNfBh7skWn0idlCBcI3RwdLSS4/I7NQKQ="
+        crossorigin="anonymous"
+></script>
 
-    <script>
+<script>
       let result = {};
 
       function getRecLocData() {
@@ -94,6 +94,7 @@
             Promise.all([
               $('.location_selected:checked').each(async (index, e) => {
                 const key = e.value
+                var rate = prompt('请输入您的打分', '');
                 const {
                   latitude,
                   longitude,
@@ -112,6 +113,7 @@
                     typedes,
                     typecode,
                     time: `${+new Date()}`,
+                    rating:rate
                   },
                   {
                     headers: {
@@ -127,5 +129,5 @@
         });
       });
     </script>
-  </body>
+</body>
 </html>
